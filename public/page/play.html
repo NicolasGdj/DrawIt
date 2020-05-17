@@ -1,0 +1,107 @@
+
+<div id="join-menu">
+
+    <div class="ui middle aligned center aligned grid" id="login">
+        <div class="column">
+
+            <h1 class="ui header white">
+                Rejoindre le salon <span id="channel_name"></span>
+            </h1>
+            <div class="ui error message" id="join-result" style="display: none"></div>
+
+            <form class="ui large form">
+                <div class="ui  segment">
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" id="username" disabled placeholder="Pseudonyme">
+                        </div>
+                    </div>
+                    <div class="ui fluid large teal submit button" id="join-button">Rejoindre</div>
+                </div>
+
+            </form>
+
+            <div id="players">
+                <div id="first-row">
+                    <img class="player selected" id="player-walter" name="walter"  onclick="$.content.changeDesign('walter')" src="/assets/images/players/walter.png">
+                    <img class="player" id="player-sophie" name="sophie" onclick="$.content.changeDesign('sophie')" src="/assets/images/players/sophie.png">
+                    <img class="player" id="player-robert" name="robert" onclick="$.content.changeDesign('robert')" src="/assets/images/players/robert.png">
+                </div>
+                <div id="second-row">
+                    <img class="player" id="player-bob" name="bob"  onclick="$.content.changeDesign('bob')" src="/assets/images/players/bob.png">
+                    <img class="player" id="player-edouardo" name="edouardo" onclick="$.content.changeDesign('edouardo')" src="/assets/images/players/edouardo.png">
+                    <img class="player" id="player-alix" name="alix" onclick="$.content.changeDesign('alix')" src="/assets/images/players/alix.png">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="ui grid" id="main-grid">
+    <div class="thirteen wide column" id="game">
+        <div id="game-row">
+
+            <img id="classement-hamburger" src="/assets/images/rank.png"/>
+            <table id="classement" style="display: none;">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th></th>
+                    <th>Pseudonyme</th>
+                    <th>Score</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            <button id="votepass" style="display: none;">Voter pour passer : 0/1</button>
+            <div class="vertical-center" id="options" style="opacity: 0; z-index: -1">
+                <h1>Options</h1> <i id="options-close" class="close icon big" /></i>
+                <h5>Couleur :</h5>
+                <canvas class="option" id="color-picker"></canvas>
+                <h5>Taille :</h5>
+                <canvas class="option" id="size-picker"></canvas>
+                <h5>Couleur de fond :</h5>
+                <canvas class="option" id="background-picker"></canvas>
+            </div>
+
+            <div id="game-content" class="vertical-center">
+                <div id="game-top" >
+                    <h2 id="game-timer" id="timer"></h2>
+                    <h1 id="top-text">_O____</h1>
+                </div>
+                <div id="game-center">
+                    <div id="game-selection" style="display:none;">
+                        <div class="white vertical-center">
+                            <h2>Choisissez votre mot :</h2>
+                            <button id="choice1" onclick="$.content.choice(1)" class="ui inverted blue button choice">Avion</button>
+                            <button id="choice2" onclick="$.content.choice(2)" class="ui inverted blue button choice">Soleil</button>
+                            <button id="choice3"  onclick="$.content.choice(3)" class="ui inverted blue button choice">Test</button>
+                        </div>
+                    </div>
+                    <canvas id="game-canvas">
+                        <img id="crown" src="/assets/images/crown.png">
+                    </canvas>
+                </div>
+                <div id="game-bottom" >
+                    <i id="eraser" class="eraser icon big"></i>
+                    <i id="delete" class="trash icon big"></i>
+                    <i id="restore" class="redo icon big"></i>
+                    <i id="options-open" class="setting icon big"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="three wide column" id="chat">
+        <div id="chat-content"></div>
+        <div  id="chat-textbox">
+            <div class="ui huge fluid  input">
+                <input type="text" id="chat-input" placeholder="">
+            </div>
+        </div>
+    </div>
+
+</div>

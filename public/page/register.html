@@ -1,0 +1,52 @@
+<div class="ui placeholder segment" style="height: 100%">
+
+    <div class="ui two column very relaxed stackable grid">
+        <div class="middle aligned column">
+            <div class="ui big button" onclick="$.content.login()">
+                <i class="signup icon"></i>
+                Connexion
+            </div>
+        </div>
+        <div class="column">
+            <form id="register-form" class="ui form">
+                <div class="field">
+                    <label>Pseudonyme</label>
+                    <div class="ui left icon input">
+                        <input name="id" type="text" placeholder="pseudonyme">
+                        <i class="user icon"></i>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>E-mail</label>
+                    <div class="ui left icon input">
+                        <input name="mail" type="text" placeholder="e-mail">
+                        <i class="user icon"></i>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Mot de passe</label>
+                    <div class="ui left icon input">
+                        <input name="password" id="password" type="password">
+                        <i class="lock icon"></i>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Confirmation</label>
+                    <div class="ui left icon input">
+                        <input id="repassword" name="repassword" type="password">
+                        <i class="lock icon"></i>
+                    </div>
+                </div>
+                <div class="ui blue submit button" onclick="$.content.submitForm()">S'inscrire</div>
+
+            </form>
+            <div id="register-form-messages" class="ui error message" style="display: none;">
+                <ul id="register-form-messages-list" class="list"></ul>
+            </div>
+        </div>
+
+    </div>
+    <div class="ui vertical divider">
+        Ou
+    </div>
+</div>

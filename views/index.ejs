@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="/assets/semantic/semantic.css">
+        <link rel="stylesheet" href="/assets/css/style.css">
+
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+                integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+                crossorigin="anonymous"></script>
+        <script src="/assets/semantic/semantic.js"></script>
+
+        <title></title>
+    </head>
+    <body>
+        <div id="loader">
+            <div id="load_progress"  data-value="1" data-total="1000" class="ui progress blue" style="height: 10px">
+                <div class="bar" style="height: 10px"></div>
+            </div>
+            <div class="ui massive active centered inline loader vertical-center"></div>
+        </div>
+        <div id="content" class="ui main container">
+
+
+        </div>
+        <script>
+
+            function includeHTML(before = undefined, after= undefined) { //TODO: Refaire en jQuery
+                var z, i, elmnt, file, xhttp;
+                /*loop through a collection of all HTML elements:*/
+                z = document.getElementsByTagName("*");
+                for (i = 0; i < z.length; i++) {
+                    elmnt = z[i];
+                    /*search for elements with a certain atrribute:*/
+                    file = elmnt.getAttribute("w3-include-html");
+                    if (file) {
+                        /*make an HTTP request using the attribute value as the file name:*/
+                        xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.readyState == 4) {
+                                if(before !== undefined)
+                                    before();
+                                if (this.status == 200) {elmnt.innerHTML = this.responseText;}
+                                if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
+                                /*remove the attribute, and call this function once more:*/
+                                elmnt.removeAttribute("w3-include-html");
+                                if(after !== undefined)
+                                    after();
+                            }
+                        }
+                        xhttp.open("GET", file, true);
+                        xhttp.send();
+                        /*exit the function:*/
+                        return;
+                    }
+                }
+            };
+
+            class PageContent {
+                constructor() {
+                    this.data = {};
+                    $.stopProgressbar();
+                    $.setProgressbar(90);
+                    $.content = this;
+                }
+
+                setData(data){
+                    this.data = data;
+                }
+
+                init() {
+                    $("#loader").hide();
+                    document.title = this.getTitle();
+                }
+
+                getTitle(){
+                    return "Draw It";
+                }
+
+                reset() {
+                    throw new Error('You must implement this function');
+                }
+
+                goto(url) {
+                    history.pushState(null, '', url);
+                    $.loadContent();
+                }
+
+            };
+
+            $(document).ready(() => {
+                let socket = io();
+
+                $.ajaxSetup({
+                    cache: false//true
+                });
+
+                $.progressbar = $("#load_progress");
+
+                $.progressbar.progress({
+                    total: 100
+                });
+
+                $.stopProgressbar = () => {
+                    clearInterval($.progressbar.fakeProgress)
+                }
+
+                $.resetProgressbar = () => {
+                    $.progressbar.progress('reset');
+                }
+
+                $.setProgressbar = (percent) => {
+                    $.progressbar.progress({
+                        percent: percent
+                    });
+                }
+
+                $.startProgressbar = (to = 100) => {
+                    $.progressbar.fakeProgress = setInterval(function() {
+                        $.progressbar.progress('increment');
+                        if($.progressbar.progress('is complete') || $.progressbar.progress('get value') >= to) {
+                            $.progressbar.progress('remove success')
+                            $.stopProgressbar();
+                        }
+                    }, 10);
+                }
+
+                $.loadContent = () => {
+                    $.resetProgressbar();
+                    $.startProgressbar(80);
+                    $("#loader").show();
+                    socket.emit('load', {path: window.location.pathname});
+                };
+
+                $.loadContent();
+
+                socket.on('load', (data) => {
+                    if(data && data.url && data.script && data.data){
+                        $("#content").attr("w3-include-html", data.url);
+                        if($.content instanceof PageContent){
+                            $.content.reset();
+                        }
+                        $.getScript(data.script, () => {
+                            includeHTML(() => {
+                                $("#content").empty();
+                            }, () => {
+                                if($.content instanceof PageContent){
+                                    $.content.setData(data.data)
+                                    $.content.init();
+                                }
+                            });
+                        });
+                    }
+                });
+
+                $("#create-button").on('click', () => {
+                    socket.emit('try create', {channelName: $("#create-input").val()});
+                });
+
+                socket.on('try create', (data) => {
+                    if(data.code === 200){
+                        $(location).attr("href", "/play/"+data.channelName+"/");
+                    } else {
+                        $('#error-message .header').text(data.message);
+                        $('#error-message .sub').text(data.submessage);
+                        $('#error-message').show()
+                    }
+                });
+            });
+        </script>
+        <script src="/socket.io/socket.io.js"></script>
+    </body>
+</html>

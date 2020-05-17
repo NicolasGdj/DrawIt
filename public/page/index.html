@@ -1,0 +1,53 @@
+<div style="overflow-y: scroll; height: 100vh">
+    <h1 id="title" class="ui header white">Draw It</h1>
+
+    <div id="game_channels" class="ui raised very padded text container segment" style="display: none">
+        <h2 class="ui header">Salons de jeux</h2>
+        <div class="ui middle aligned divided list">
+        </div>
+    </div>
+
+    <div class="ui raised very padded text container segment">
+        <h2 class="ui header">Créer un nouveau salon ?</h2>
+
+        <div id="error-message" class="ui negative message transition" style="display: none">
+            <i class="close icon" onclick="$('#error-message').hide('slow')"></i>
+            <div class="header">
+            </div>
+            <p class="sub"></p>
+        </div>
+
+        <div class="ui action input" style="width:100%">
+            <input id="create-input" type="text" placeholder="Nom du salon">
+            <button id="create-button" class="ui button" onclick="$.content.submitForm()">Créer</button>
+        </div>
+    </div>
+
+    <div class="ui raised very padded text container segment">
+        <h2 class="ui header">Qui est l'auteur de ce site ?</h2>
+
+        <p>
+            Site réalisé par <span>Nicolas GUERROUDJ</span>, étudiant en deuxième année d'informatique à l'IUT d'Aix en provence,
+            dans le cadre d'un projet scolaire encadré par <span>M. Olivier Pons</span>.<br/>
+        </p>
+        <div class="ui divider"></div>
+        <h4>Technologies utilisées</h4>
+        <ul>
+            <li>Node JS (express)</li>
+            <li>Semantic UI</li>
+            <li>jQuery</li>
+        </ul>
+        <h4>Informations complémentaires</h4>
+        <ul>
+            <li>Les pages sont chargées dynamiquement. (Aucun refresh)</li>
+        </ul>
+
+        <div class="ui divider"></div>
+        <h4>Voir d'autres de ses créations ?</h4>
+        <div style="text-align: center; margin: auto">
+            <a class="ui primary button" >
+                SOON
+            </a>
+        </div>
+    </div>
+</div>

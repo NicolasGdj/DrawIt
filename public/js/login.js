@@ -14,7 +14,9 @@ $.contentClass = class LoginPage extends PageContent{
 
         this.socket.on('login', (data) => {
             if (data.code === 200) {
-                this.goto("/")
+                setTimeout(() => {
+                    $.content.goto("/");
+                }, 1000)
             } else {
                 $("#login-form-messages").show();
                 let list = $("#login-form-messages-list");

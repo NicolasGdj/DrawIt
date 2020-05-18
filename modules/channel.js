@@ -63,16 +63,18 @@ module.exports = class Channel {
 
     update(){
 
+        let userInfos = this.getUserInfos();
         let data = {
             channelName: this.getName(),
             maxPlayers: this.maxPlayers,
             playerCount: this.getUsers().length,
             owner: this.getOwner().name,
-            players: this.getUserInfos(),
+            players: userInfos,
             state: this.state,
             timer: this.timer,
             word: this.hint,
             index: this.index,
+            current: userInfos[this.index],
             round: this.round,
             lastWinner: this.lastWinner
         };
@@ -114,6 +116,8 @@ module.exports = class Channel {
     }
 
     nextRound(){
+        if(this.round !== 0)
+            this.chat(undefined, "Fin du tour, le mot était " + this.word + ".", "#b12222")
         ++this.round;
         this.hint = "";
         do{
@@ -245,11 +249,31 @@ module.exports = class Channel {
 
     }
 
+    isNear(word, text){
+        if(word === text)
+            return true;
+        if(word.length === text.length){
+            let diffCount = 0;
+            for(let i = 0; i < word.length; ++i){
+                if(text[i] !== word[i])
+                    ++diffCount;
+            }
+            if(diffCount === 1)
+                return true;
+        } else if(word.length+1 === text.length){
+            if(text.includes(word))
+                return true;
+        }else if(word.length-1 === text.length){
+            if(word.includes(text))
+                return true;
+        }
+        return false;
+    }
+
     answer(sender, message){
         if(this.isTurn(sender)){
             this.privateChat(undefined, sender, "Vous ne pouvez pas ecrire quand vous dessinez.");
             return true;
-
         }
         if(sender.found) {
             this.privateChat(undefined, sender, "Vous avez deja trouve la reponse.");
@@ -257,6 +281,9 @@ module.exports = class Channel {
         }
         if(message.toLowerCase() === this.word.toLowerCase()) {
             let score = parseInt(500/this.maxTime*this.timer);
+            this.users.forEach((user) => {
+                user.emit('answer', {});
+            });
             this.chat(undefined, sender.name + " a trouve (+"+score+")", "#29e31c")
             sender.found = true;
             sender.score += score;
@@ -271,6 +298,8 @@ module.exports = class Channel {
             }
 
             return true;
+        }else if(this.isNear(this.word.toLowerCase(), message.toLowerCase())){
+            this.privateChat(undefined, sender, "Vous etes proche.", "#673ab7");
         }
         return false;
     }
@@ -299,8 +328,8 @@ module.exports = class Channel {
         }
     }
 
-    privateChat(sender, receiver, message){
-        receiver.emit('chat message', {message: message, sender: (sender === undefined ? '' : sender.name)});
+    privateChat(sender, receiver, message, color = "#b2bec3"){
+        receiver.emit('chat message', {message: message, sender: (sender === undefined ? '' : sender.name), color: color});
     }
 
     isTurn(sender) {
@@ -335,14 +364,11 @@ module.exports = class Channel {
             let index = Math.floor(Math.random() * this.hint.length);
             let i = 0;
             let foundOne = false;
-            console.log("Index: " + index);
-
             for (let c of this.hint) {
                 if(!foundOne && c === "_")
                     foundOne = true;
                 if (i === index && c === "_") {
                     tmp += this.word[i];
-                    console.log("Char at "+i+": " + c + " New letter : "+this.word[i]+" tmp = " + tmp);
                 } else {
                     tmp += c;
                 }

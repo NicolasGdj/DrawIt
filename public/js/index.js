@@ -19,6 +19,8 @@ $.contentClass = class IndexPage extends PageContent{
             $.content.validForm();
         });
 
+        $("#welcome").text("Bienvenue " + this.data.session.name)
+
         this.socket.emit('request channels');
 
         this.socket.on('channels', (data) => {
@@ -29,8 +31,8 @@ $.contentClass = class IndexPage extends PageContent{
                 } else {
                     div.show();
                     let list = div.find('.list');
+                    list.empty();
                     for (let channel of data.channels) {
-                        list.empty();
                         list.append(
                             "            <div class=\"item\">\n" +
                             "                <div class=\"right floated content\">\n" +
@@ -66,7 +68,7 @@ $.contentClass = class IndexPage extends PageContent{
             input.parent().addClass("error");
             $('#error-message .header').text("Nom du salon incorrect");
             $('#error-message .sub').text("Le nom d\'un salon doit comporter entre 3 et 15 caracteres alpha-numeriques.");
-            $('#error-message').show("slow");
+            $('#error-message').show();
             return false;
         }
         $('#error-message').hide()

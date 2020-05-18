@@ -1,8 +1,10 @@
 
 <div id="join-menu">
+    <i id="join-menu-back" class="arrow left huge white icon"></i>
 
     <div class="ui middle aligned center aligned grid" id="login">
         <div class="column">
+
 
             <h1 class="ui header white">
                 Rejoindre le salon <span id="channel_name"></span>
@@ -77,25 +79,61 @@
                     <div id="game-selection" style="display:none;">
                         <div class="white vertical-center">
                             <h2>Choisissez votre mot :</h2>
-                            <button id="choice1" onclick="$.content.choice(1)" class="ui inverted blue button choice">Avion</button>
-                            <button id="choice2" onclick="$.content.choice(2)" class="ui inverted blue button choice">Soleil</button>
-                            <button id="choice3"  onclick="$.content.choice(3)" class="ui inverted blue button choice">Test</button>
+                            <button id="choice1" onclick="$.content.choice(1)" class="ui inverted blue button choice"></button>
+                            <button id="choice2" onclick="$.content.choice(2)" class="ui inverted blue button choice"></button>
+                            <button id="choice3"  onclick="$.content.choice(3)" class="ui inverted blue button choice"></button>
                         </div>
                     </div>
                     <canvas id="game-canvas">
-                        <img id="crown" src="/assets/images/crown.png">
                     </canvas>
                 </div>
                 <div id="game-bottom" >
-                    <i id="eraser" class="eraser icon big"></i>
-                    <i id="delete" class="trash icon big"></i>
-                    <i id="restore" class="redo icon big"></i>
-                    <i id="options-open" class="setting icon big"></i>
+                    <div class="ui floating labeled icon dropdown" id="pencil">
+                        <i class="pencil alternate icon big"></i>
+                        <div class="menu">
+                            <div class="ui message">
+                                Stylo
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui floating labeled icon dropdown" id="eraser">
+                        <i class="eraser alternate icon big"></i>
+                        <div class="menu">
+                            <div class="ui message">
+                                Effaceur
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui floating labeled icon dropdown" id="delete">
+                        <i class="trash alternate icon big"></i>
+                        <div class="menu">
+                            <div class="ui message">
+                                Effacer toutes les lignes
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui floating labeled icon dropdown" id="restore">
+                        <i class="redo alternate icon big"></i>
+                        <div class="menu">
+                            <div class="ui message">
+                                Tout remettre à zéro
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui floating labeled icon dropdown" id="options-open">
+                        <i class="setting alternate icon big"></i>
+                        <div class="menu">
+                            <div class="ui message">
+                                Options
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="three wide column" id="chat">
+        <button class="ui huge fluid inverted button" id="chat-go-back">Retour</button>
         <div id="chat-content"></div>
         <div  id="chat-textbox">
             <div class="ui huge fluid  input">

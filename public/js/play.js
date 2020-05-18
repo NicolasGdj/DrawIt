@@ -7,6 +7,9 @@ $.contentClass = class PlayPage extends PageContent{
         $("#channel_name").html(this.data.channelName);
         $("#username").val(this.data.session.name);
 
+        $("#join-menu-back").on('click', () => $.content.goto("/"));
+        $("#chat-go-back").on('click', () => $.content.goto("/"));
+
         $("#classement").on('click', () => {
             $("#classement").hide();
             $("#classement-hamburger").show();
@@ -97,6 +100,10 @@ $.contentClass = class PlayPage extends PageContent{
 
         });
 
+        this.socket.on('answer', (data) => {
+            $.content.playSound($.content.sounds.sucess);
+        });
+
         this.socket.on('votepass', (data) => {
             $.content.updateVotePass(data.current, data.max);
         });
@@ -121,6 +128,7 @@ $.contentClass = class PlayPage extends PageContent{
                 }else if(game.state === "running"){
                     $("#game-selection").hide();
                     $("#votepass").show();
+                    $.content.playSound($.content.sounds.your_turn);
                 }else if(game.state === "selection"){
                     $("#votepass").hide();
                     $("#game-timer").show();
@@ -132,7 +140,8 @@ $.contentClass = class PlayPage extends PageContent{
                     }
                 }
             }
-            if(game.state === "selection"){
+            if(game.state === "selection" && game.players.length > game.index){
+                $.content.playSound($.content.sounds.start_in);
                 $("#top-text").html("Au tour de " + game.players[game.index].name + " (" + game.timer + ")");
             }else if(game.state === "running"){
                 $("#top-text").html(game.word);
@@ -144,7 +153,6 @@ $.contentClass = class PlayPage extends PageContent{
         this.socket.on('add line', (data) => {
             $.content.draw.lines.push(data.line);
         });
-
 
         this.socket.on('set background', (data) => {
             $.content.background = data.color;
@@ -159,14 +167,9 @@ $.contentClass = class PlayPage extends PageContent{
             $.content.background = "white";
         });
 
-
-        this.socket.on('set all', (data) => {
-
-        });
-
         this.ignoreTick = 0;
         this.tick = 0;
-        this.intervalID = requestAnimationFrame(() => $.content.update(++$.content.tick));
+        this.intervalID = requestAnimationFrame(() => $.content.update());
 
         this.mouse = {
             x: 0,
@@ -187,7 +190,7 @@ $.contentClass = class PlayPage extends PageContent{
                 mouse.y = evt.clientY - rect.top;
                 let width = $.content.width;
                 let height = $.content.height;
-                if (mouse.click && $.content.isMyTurn() && (++$.content.ignoreTick) % 2 === 0) {
+                if (mouse.click && $.content.isMyTurn() && (++$.content.ignoreTick) % 2 === 0 && $.content.draw.lines.length !== 0) {
                     $.content.draw.lines[$.content.draw.lines.length - 1].next.push({
                         x: mouse.x / width,
                         y: mouse.y / height
@@ -331,13 +334,26 @@ $.contentClass = class PlayPage extends PageContent{
 
                 this.updateOption();
             }
+        }).dropdown({
+            on: 'hover'
         });
 
         $("#eraser").click(() => {
             if($.content.isMyTurn()) {
                 $.content.mouse.pointer.color = "$";
             }
+        }).dropdown({
+            on: 'hover'
         });
+
+        $("#pencil").click(() => {
+            if($.content.isMyTurn()) {
+                $.content.mouse.pointer.color = $.content.mouse.pointer.lastColor;
+            }
+        }).dropdown({
+            on: 'hover'
+        })
+        ;
 
         $("#delete").click(() => {
             if($.content.isMyTurn()) {
@@ -346,6 +362,8 @@ $.contentClass = class PlayPage extends PageContent{
 
                 this.updateOption();
             }
+        }).dropdown({
+            on: 'hover'
         });
 
         this.updateOption();
@@ -363,6 +381,8 @@ $.contentClass = class PlayPage extends PageContent{
 
                 $("#options").fadeTo("fast", 1.0);
             }
+        }).dropdown({
+            on: 'hover'
         });
 
     }
@@ -375,7 +395,7 @@ $.contentClass = class PlayPage extends PageContent{
     }
 
     isMyTurn(){
-        return !this.game ? false : (this.game.players[this.game.index].name === this.game.user);
+        return this.game !== undefined && this.game.current !== undefined && this.game.current.name === this.game.user;
     }
 
     updateOption() {
@@ -407,6 +427,7 @@ $.contentClass = class PlayPage extends PageContent{
 
         let pixel = ctx.getImageData(this.colorPicker.x, 0, 1, 1).data;
         this.mouse.pointer.color = 'rgb(' + pixel[0] + ', ' + pixel[1] + ', ' + pixel[2] + ')';
+        this.mouse.pointer.lastColor = this.mouse.pointer.color;
 
         ctx.beginPath();
         ctx.arc(this.colorPicker.x, canvas.height()/2, 20, 0, 2 * Math.PI, false);
@@ -527,20 +548,18 @@ $.contentClass = class PlayPage extends PageContent{
     }
 
     updateClassement() {
-        console.log("----------")
-        console.log(this.game.players);
-        this.game.players.sort($.content.sortScore);
-        console.log(this.game.players);
-
+        this.game.classement = this.game.players;
+        this.game.classement.sort($.content.sortScore);
         let classement = $("#classement tbody");
         classement.empty();
-        for(let i = 1; i <= this.game.players.length; ++i){
+        for(let i = 1; i <= this.game.classement.length; ++i){
+            let player = this.game.classement[i-1];
             classement.append(
-                "<tr " + (this.game.players[i-1].found ? "class='found'" : "") +">" +
+                "<tr " + (player.found ? "class='found'" : "") +">" +
                 "   <td>"+i+"</td>" +
-                "   <td><img class='classement-image' src='/assets/images/players/"+this.game.players[i-1].design+".png'/></td>" +
-                "   <td>"+this.game.players[i-1].name+"</td>" +
-                "   <td>"+this.game.players[i-1].score+"</td>" +
+                "   <td><img class='classement-image' src='/assets/images/players/"+player.design+".png'/></td>" +
+                "   <td>"+player.name+"</td>" +
+                "   <td>"+player.score+"</td>" +
                 "</tr>"
             );
         }
@@ -556,7 +575,8 @@ $.contentClass = class PlayPage extends PageContent{
         this.socket.close();
     };
 
-    update(tick) {
+    update() {
+        requestAnimationFrame(() => $.content.update());
 
         let canvas = this.canvas_data.jItem;
         this.width = canvas.width();
@@ -579,6 +599,9 @@ $.contentClass = class PlayPage extends PageContent{
         ctx.lineJoin = "round";
 
         for (let line of $.content.draw.lines) {
+            if(line === undefined)
+                continue;
+
             ctx.beginPath();
             ctx.fillStyle = (line.color === "$" ? this.background : line.color);
             ctx.strokeStyle = (line.color === "$" ? this.background : line.color);
@@ -610,9 +633,6 @@ $.contentClass = class PlayPage extends PageContent{
             ctx.arc(this.mouse.x, this.mouse.y, this.mouse.pointer.radius * this.width, 0, 2 * Math.PI);
             ctx.fill();
         }
-
-        requestAnimationFrame(() => $.content.update(++$.content.tick));
-
     }
 };
 $.content = new $.contentClass;

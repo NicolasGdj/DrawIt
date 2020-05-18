@@ -27,7 +27,6 @@ let http = require('https').createServer({
 
 let io = require('socket.io')(http);
 
-
 //Moteur de template
 app.set('view engine', 'ejs');
 
@@ -67,6 +66,7 @@ let channels = [];
 let users = [];
 
 users.push(new User("test", "a@a.fr", md5("testtest")));
+users.push(new User("aylox", "a@a.fr", md5("ayloxaylox")));
 
 function isConnected(session = undefined){
     if(!session)
@@ -122,6 +122,7 @@ io.of('/logout').on('connection', (socket) => {
     socket.on('logout', (data) => {
         if(isConnected(socket.request.session)){
             delete socket.request.session.user;
+            socket.request.session.save();
             socket.emit('logout', {code: 200, message: "Ok"});
         }else{
             socket.emit('logout', {code: 401, message: "Vous n'etes pas connecte."});
@@ -135,7 +136,6 @@ io.of('/index').on('connection', (socket) => {
     });
 
     socket.on('try create', (data) => {
-        console.log(data)
         if(data.channelName === undefined)
             return;
 
@@ -177,10 +177,10 @@ io.of('/play').on('connection', (socket) => {
 
         for(let channel of channels) {
             if (channel.getName() === channelName) {
-                /*if(channel.isUser(socket.name)){
+                if(channel.isUser(socket.name)){
                     socket.emit('play', {code: 401, 'message': 'Username already used'});
                     return;
-                }*/
+                }
                 if(channel.isFull()){
                     socket.emit('play', {code: 406, 'message': 'Channel is full'});
                     return;
@@ -188,6 +188,7 @@ io.of('/play').on('connection', (socket) => {
 
                 channel.join(socket);
                 channel.update();
+                io.of('/index').emit('channels', {channels: getChannelsInfo()})
 
                 return;
             }
@@ -197,6 +198,7 @@ io.of('/play').on('connection', (socket) => {
         socket.channel.setWords(words);
         channels.push(socket.channel);
         socket.channel.update();
+        io.of('/index').emit('channels', {channels: getChannelsInfo()})
 
     });
 
@@ -217,7 +219,6 @@ io.of('/play').on('connection', (socket) => {
     });
 
     socket.on('choice', (data) => {
-        console.log(data);
         if(data.choice)
             if(socket.channel !== undefined) {
                 socket.channel.selectChoice(socket, data.choice);

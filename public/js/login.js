@@ -1,4 +1,4 @@
-$.contentClass = class LoginPage extends PageContent{
+drawIt.contentClass = class LoginPage extends drawIt.pageContentClass{
 
     init() {
         super.init();
@@ -6,23 +6,34 @@ $.contentClass = class LoginPage extends PageContent{
 
         let form = $("#login-form");
         form.find('[name="id"]').on('input', () => {
-            $.content.validForm()
+            drawIt.content.validForm()
         });
         form.find('[name="password"]').on('input', () => {
-            $.content.validForm()
+            drawIt.content.validForm()
         });
 
         this.socket.on('login', (data) => {
             if (data.code === 200) {
                 setTimeout(() => {
-                    $.content.goto("/");
+                    drawIt.content.goto("/");
                 }, 1000)
             } else {
+                $("#loader").hide();
+                drawIt.resetProgressbar();
+
                 $("#login-form-messages").show();
                 let list = $("#login-form-messages-list");
                 list.empty();
                 list.append($("<li />").text(data.message))
             }
+        });
+
+        $("#login-form > .submit").click(() => {
+            drawIt.content.submitForm();
+        });
+
+        $("#register-btn").click(() => {
+            drawIt.content.register();
         });
     }
 
@@ -62,6 +73,9 @@ $.contentClass = class LoginPage extends PageContent{
         let form = $("#login-form");
         let id = form.find('[name="id"]');
         let password = form.find('[name="password"]');
+        drawIt.resetProgressbar();
+        drawIt.startProgressbar(80);
+        $("#loader").show();
         this.socket.emit('login', {id: id.val(), password: password.val()});
     }
 
@@ -73,4 +87,4 @@ $.contentClass = class LoginPage extends PageContent{
         this.socket.close();
     };
 }
-$.content = new $.contentClass;
+drawIt.content = new drawIt.contentClass;

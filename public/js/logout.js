@@ -1,4 +1,4 @@
-$.contentClass = class LogoutPage extends PageContent{
+drawIt.contentClass = class LogoutPage extends drawIt.pageContentClass{
 
     init() {
         super.init();
@@ -14,6 +14,11 @@ $.contentClass = class LogoutPage extends PageContent{
                 list.append($("<li />").text(data.message))
             }
         });
+
+        $("#logout-btn").click(() => {
+            drawIt.content.submitForm();
+        });
+
     }
 
     getTitle(){
@@ -28,4 +33,4 @@ $.contentClass = class LogoutPage extends PageContent{
         this.socket.close();
     };
 };
-$.content = new $.contentClass;
+drawIt.content = new drawIt.contentClass;

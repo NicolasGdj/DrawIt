@@ -1,4 +1,4 @@
-$.contentClass = class PlayPage extends PageContent{
+drawIt.contentClass = class PlayPage extends drawIt.pageContentClass{
 
     init() {
         super.init();
@@ -7,8 +7,8 @@ $.contentClass = class PlayPage extends PageContent{
         $("#channel_name").html(this.data.channelName);
         $("#username").val(this.data.session.name);
 
-        $("#join-menu-back").on('click', () => $.content.goto("/"));
-        $("#chat-go-back").on('click', () => $.content.goto("/"));
+        $("#join-menu-back").on('click', () => drawIt.content.goto("/"));
+        $("#chat-go-back").on('click', () => drawIt.content.goto("/"));
 
         $("#classement").on('click', () => {
             $("#classement").hide();
@@ -65,13 +65,13 @@ $.contentClass = class PlayPage extends PageContent{
             }
         };
 
-        $('#join-button').on('click', () => $.content.tryConnect());
+        $('#join-button').on('click', () => drawIt.content.tryConnect());
 
         $('#chat-input').keypress((event) => {
-            var keycode = (event.keyCode ? event.keyCode : event.which);
+            let keycode = (event.keyCode ? event.keyCode : event.which);
             if(keycode == '13'){
                 let chat_input = $('#chat-input');
-                $.content.socket.emit('chat message', {message: chat_input.val()});
+                drawIt.content.socket.emit('chat message', {message: chat_input.val()});
                 chat_input.val("");
                 return false;
             }
@@ -94,31 +94,31 @@ $.contentClass = class PlayPage extends PageContent{
             if(data.sender === undefined || data.sender === ''){
                 $("#chat-content").append("<p style=\"color: "+data.color+"\" class='private-message'>" + data.message + "</p>");
             }else {
-                $("#chat-content").append("<p><span style=\"color:"+$.content.canvas_data.players[data.design].color+"\">" + data.sender + ": </span>" + data.message + "</p>");
+                $("#chat-content").append("<p><span style=\"color:"+drawIt.content.canvas_data.players[data.design].color+"\">" + data.sender + ": </span>" + data.message + "</p>");
             }
             $('#chat-content').scrollTop($('#chat-content')[0].scrollHeight);
 
         });
 
         this.socket.on('answer', (data) => {
-            $.content.playSound($.content.sounds.sucess);
+            drawIt.content.playSound(drawIt.content.sounds.sucess);
         });
 
         this.socket.on('votepass', (data) => {
-            $.content.updateVotePass(data.current, data.max);
+            drawIt.content.updateVotePass(data.current, data.max);
         });
 
         $('#votepass').on('click', () => {
-            $.content.socket.emit('votepass', {})
+            drawIt.content.socket.emit('votepass', {})
         });
 
         this.socket.on('update', (game) => {
-            let last = $.content.game;
-            $.content.game = game;
+            let last = drawIt.content.game;
+            drawIt.content.game = game;
             this.updateClassement();
 
             if(last === undefined || last.state !== game.state){
-                $.content.clearAll();
+                drawIt.content.clearAll();
 
                 if(game.state === "waiting"){
                     $("#votepass").hide();
@@ -128,11 +128,11 @@ $.contentClass = class PlayPage extends PageContent{
                 }else if(game.state === "running"){
                     $("#game-selection").hide();
                     $("#votepass").show();
-                    $.content.playSound($.content.sounds.your_turn);
+                    drawIt.content.playSound(drawIt.content.sounds.your_turn);
                 }else if(game.state === "selection"){
                     $("#votepass").hide();
                     $("#game-timer").show();
-                    if($.content.isMyTurn() && game.choice) {
+                    if(drawIt.content.isMyTurn() && game.choice) {
                         $("#choice1").html(game.choice.first);
                         $("#choice2").html(game.choice.second);
                         $("#choice3").html(game.choice.third);
@@ -141,7 +141,7 @@ $.contentClass = class PlayPage extends PageContent{
                 }
             }
             if(game.state === "selection" && game.players.length > game.index){
-                $.content.playSound($.content.sounds.start_in);
+                drawIt.content.playSound(drawIt.content.sounds.start_in);
                 $("#top-text").html("Au tour de " + game.players[game.index].name + " (" + game.timer + ")");
             }else if(game.state === "running"){
                 $("#top-text").html(game.word);
@@ -151,25 +151,25 @@ $.contentClass = class PlayPage extends PageContent{
 
 
         this.socket.on('add line', (data) => {
-            $.content.draw.lines.push(data.line);
+            drawIt.content.draw.lines.push(data.line);
         });
 
         this.socket.on('set background', (data) => {
-            $.content.background = data.color;
+            drawIt.content.background = data.color;
         });
 
         this.socket.on('clear', _ => {
-            $.content.draw.lines = [];
+            drawIt.content.draw.lines = [];
         });
 
         this.socket.on('restore', _ => {
-            $.content.draw.lines = [];
-            $.content.background = "white";
+            drawIt.content.draw.lines = [];
+            drawIt.content.background = "white";
         });
 
         this.ignoreTick = 0;
         this.tick = 0;
-        this.intervalID = requestAnimationFrame(() => $.content.update());
+        this.intervalID = requestAnimationFrame(() => drawIt.content.update());
 
         this.mouse = {
             x: 0,
@@ -183,49 +183,49 @@ $.contentClass = class PlayPage extends PageContent{
         this.background = "white";
 
         this.canvas_data.jItem.mousemove((evt) => {
-            if($.content.isMyTurn()) {
-                let rect = $.content.canvas_data.item.getBoundingClientRect();
-                let mouse = $.content.mouse;
+            if(drawIt.content.isMyTurn()) {
+                let rect = drawIt.content.canvas_data.item.getBoundingClientRect();
+                let mouse = drawIt.content.mouse;
                 mouse.x = evt.clientX - rect.left;
                 mouse.y = evt.clientY - rect.top;
-                let width = $.content.width;
-                let height = $.content.height;
-                if (mouse.click && $.content.isMyTurn() && (++$.content.ignoreTick) % 2 === 0 && $.content.draw.lines.length !== 0) {
-                    $.content.draw.lines[$.content.draw.lines.length - 1].next.push({
+                let width = drawIt.content.width;
+                let height = drawIt.content.height;
+                if (mouse.click && drawIt.content.isMyTurn() && (++drawIt.content.ignoreTick) % 2 === 0 && drawIt.content.draw.lines.length !== 0) {
+                    drawIt.content.draw.lines[drawIt.content.draw.lines.length - 1].next.push({
                         x: mouse.x / width,
                         y: mouse.y / height
                     });
                 }
             }
         }).mouseup(() => {
-            if($.content.isMyTurn()) {
-                let mouse = $.content.mouse;
+            if(drawIt.content.isMyTurn()) {
+                let mouse = drawIt.content.mouse;
                 if (mouse.click) {
                     this.socket.emit('add line', {
-                        line: $.content.draw.lines[$.content.draw.lines.length - 1]
+                        line: drawIt.content.draw.lines[drawIt.content.draw.lines.length - 1]
                     });
                 }
                 mouse.click = false;
             }
         }).mouseleave(() => {
-            if($.content.isMyTurn()) {
-                let mouse = $.content.mouse;
+            if(drawIt.content.isMyTurn()) {
+                let mouse = drawIt.content.mouse;
                 if (mouse.click) {
                     this.socket.emit('add line', {
-                        line: $.content.draw.lines[$.content.draw.lines.length - 1]
+                        line: drawIt.content.draw.lines[drawIt.content.draw.lines.length - 1]
                     });
                 }
                 mouse.click = false;
             }
         })
         .mousedown(() => {
-            if($.content.isMyTurn()) {
-                let mouse = $.content.mouse;
-                let width = $.content.width;
-                let height = $.content.height;
+            if(drawIt.content.isMyTurn()) {
+                let mouse = drawIt.content.mouse;
+                let width = drawIt.content.width;
+                let height = drawIt.content.height;
                 mouse.click = true;
-                if ($.content.isMyTurn()) {
-                    $.content.draw.lines.push({
+                if (drawIt.content.isMyTurn()) {
+                    drawIt.content.draw.lines.push({
                         radius: mouse.pointer.radius,
                         color: mouse.pointer.color,
                         start: {x: mouse.x / width, y: mouse.y / height},
@@ -256,81 +256,81 @@ $.contentClass = class PlayPage extends PageContent{
 
         $("#color-picker").mousemove((evt) => {
             let rect = $("#color-picker")[0].getBoundingClientRect();
-            if($.content.colorPicker.click) {
-                $.content.colorPicker.x = evt.clientX - rect.left;
-                $.content.updateOption();
+            if(drawIt.content.colorPicker.click) {
+                drawIt.content.colorPicker.x = evt.clientX - rect.left;
+                drawIt.content.updateOption();
             }
         }).mouseup(() => {
-            $.content.colorPicker.click = false;
-            $.content.updateOption();
+            drawIt.content.colorPicker.click = false;
+            drawIt.content.updateOption();
         }).mouseleave(() => {
-            $.content.colorPicker.click = false;
-            $.content.updateOption();
+            drawIt.content.colorPicker.click = false;
+            drawIt.content.updateOption();
         })
         .mousedown((evt) => {
-            $.content.colorPicker.click = true;
+            drawIt.content.colorPicker.click = true;
             let rect = $("#color-picker")[0].getBoundingClientRect();
 
-            $.content.colorPicker.x = evt.clientX - rect.left;
-            $.content.updateOption();
+            drawIt.content.colorPicker.x = evt.clientX - rect.left;
+            drawIt.content.updateOption();
         });
 
         $("#size-picker").mousemove((evt) => {
             let rect = $("#size-picker")[0].getBoundingClientRect();
-            if($.content.sizePicker.click) {
-                $.content.sizePicker.x = evt.clientX - rect.left;
-                $.content.updateOption();
+            if(drawIt.content.sizePicker.click) {
+                drawIt.content.sizePicker.x = evt.clientX - rect.left;
+                drawIt.content.updateOption();
             }
         }).mouseup(() => {
-            $.content.sizePicker.click = false;
-            $.content.updateOption();
+            drawIt.content.sizePicker.click = false;
+            drawIt.content.updateOption();
         }).mouseleave(() => {
-            $.content.sizePicker.click = false;
-            $.content.updateOption();
+            drawIt.content.sizePicker.click = false;
+            drawIt.content.updateOption();
         })
         .mousedown((evt) => {
-            $.content.sizePicker.click = true;
+            drawIt.content.sizePicker.click = true;
             let rect = $("#size-picker")[0].getBoundingClientRect();
 
-            $.content.sizePicker.x = evt.clientX - rect.left;
-            $.content.updateOption();
+            drawIt.content.sizePicker.x = evt.clientX - rect.left;
+            drawIt.content.updateOption();
         });
 
         $("#background-picker").mousemove((evt) => {
             let rect = $("#background-picker")[0].getBoundingClientRect();
-            if($.content.backgroundPicker.click) {
-                $.content.backgroundPicker.x = evt.clientX - rect.left;
-                $.content.updateOption();
+            if(drawIt.content.backgroundPicker.click) {
+                drawIt.content.backgroundPicker.x = evt.clientX - rect.left;
+                drawIt.content.updateOption();
             }
         }).mouseup(() => {
-            $.content.backgroundPicker.click = false;
+            drawIt.content.backgroundPicker.click = false;
             this.socket.emit('set background', {
-                color : $.content.background
+                color : drawIt.content.background
             });
-            $.content.updateOption();
+            drawIt.content.updateOption();
         }).mouseleave(() => {
-            $.content.backgroundPicker.click = false;
+            drawIt.content.backgroundPicker.click = false;
             this.socket.emit('set background', {
-                color : $.content.background
+                color : drawIt.content.background
             });
-            $.content.updateOption();
+            drawIt.content.updateOption();
         })
         .mousedown((evt) => {
-            $.content.backgroundPicker.click = true;
+            drawIt.content.backgroundPicker.click = true;
             let rect = $("#background-picker")[0].getBoundingClientRect();
 
-            $.content.backgroundPicker.x = evt.clientX - rect.left;
-            $.content.updateOption();
+            drawIt.content.backgroundPicker.x = evt.clientX - rect.left;
+            drawIt.content.updateOption();
         });
 
         $("#restore").click(() => {
-            if($.content.isMyTurn()) {
+            if(drawIt.content.isMyTurn()) {
 
-                $.content.draw.lines = [];
-                $.content.colorPicker.x = 0;
-                $.content.sizePicker.x = 0;
-                $.content.backgroundPicker.x = -1;
-                $.content.socket.emit('restore');
+                drawIt.content.draw.lines = [];
+                drawIt.content.colorPicker.x = 0;
+                drawIt.content.sizePicker.x = 0;
+                drawIt.content.backgroundPicker.x = -1;
+                drawIt.content.socket.emit('restore');
 
                 this.updateOption();
             }
@@ -339,16 +339,16 @@ $.contentClass = class PlayPage extends PageContent{
         });
 
         $("#eraser").click(() => {
-            if($.content.isMyTurn()) {
-                $.content.mouse.pointer.color = "$";
+            if(drawIt.content.isMyTurn()) {
+                drawIt.content.mouse.pointer.color = "$";
             }
         }).dropdown({
             on: 'hover'
         });
 
         $("#pencil").click(() => {
-            if($.content.isMyTurn()) {
-                $.content.mouse.pointer.color = $.content.mouse.pointer.lastColor;
+            if(drawIt.content.isMyTurn()) {
+                drawIt.content.mouse.pointer.color = drawIt.content.mouse.pointer.lastColor;
             }
         }).dropdown({
             on: 'hover'
@@ -356,9 +356,9 @@ $.contentClass = class PlayPage extends PageContent{
         ;
 
         $("#delete").click(() => {
-            if($.content.isMyTurn()) {
-                $.content.draw.lines = [];
-                $.content.socket.emit('clear');
+            if(drawIt.content.isMyTurn()) {
+                drawIt.content.draw.lines = [];
+                drawIt.content.socket.emit('clear');
 
                 this.updateOption();
             }
@@ -375,7 +375,7 @@ $.contentClass = class PlayPage extends PageContent{
         });
 
         $("#options-open").click(() => {
-            if($.content.isMyTurn()) {
+            if(drawIt.content.isMyTurn()) {
                 let options = $("#options");
                 $("#options").css('z-index', 2);
 
@@ -549,7 +549,7 @@ $.contentClass = class PlayPage extends PageContent{
 
     updateClassement() {
         this.game.classement = this.game.players;
-        this.game.classement.sort($.content.sortScore);
+        this.game.classement.sort(drawIt.content.sortScore);
         let classement = $("#classement tbody");
         classement.empty();
         for(let i = 1; i <= this.game.classement.length; ++i){
@@ -576,7 +576,7 @@ $.contentClass = class PlayPage extends PageContent{
     };
 
     update() {
-        requestAnimationFrame(() => $.content.update());
+        requestAnimationFrame(() => drawIt.content.update());
 
         let canvas = this.canvas_data.jItem;
         this.width = canvas.width();
@@ -598,7 +598,7 @@ $.contentClass = class PlayPage extends PageContent{
 
         ctx.lineJoin = "round";
 
-        for (let line of $.content.draw.lines) {
+        for (let line of drawIt.content.draw.lines) {
             if(line === undefined)
                 continue;
 
@@ -635,4 +635,4 @@ $.contentClass = class PlayPage extends PageContent{
         }
     }
 };
-$.content = new $.contentClass;
+drawIt.content = new drawIt.contentClass;

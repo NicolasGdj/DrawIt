@@ -26,14 +26,14 @@
 
             <div id="players">
                 <div id="first-row">
-                    <img class="player selected" id="player-walter" name="walter"  onclick="$.content.changeDesign('walter')" src="/assets/images/players/walter.png">
-                    <img class="player" id="player-sophie" name="sophie" onclick="$.content.changeDesign('sophie')" src="/assets/images/players/sophie.png">
-                    <img class="player" id="player-robert" name="robert" onclick="$.content.changeDesign('robert')" src="/assets/images/players/robert.png">
+                    <img class="player selected" id="player-walter" name="walter"  onclick="drawIt.content.changeDesign('walter')" src="/assets/images/players/walter.png">
+                    <img class="player" id="player-sophie" name="sophie" onclick="drawIt.content.changeDesign('sophie')" src="/assets/images/players/sophie.png">
+                    <img class="player" id="player-robert" name="robert" onclick="drawIt.content.changeDesign('robert')" src="/assets/images/players/robert.png">
                 </div>
                 <div id="second-row">
-                    <img class="player" id="player-bob" name="bob"  onclick="$.content.changeDesign('bob')" src="/assets/images/players/bob.png">
-                    <img class="player" id="player-edouardo" name="edouardo" onclick="$.content.changeDesign('edouardo')" src="/assets/images/players/edouardo.png">
-                    <img class="player" id="player-alix" name="alix" onclick="$.content.changeDesign('alix')" src="/assets/images/players/alix.png">
+                    <img class="player" id="player-bob" name="bob"  onclick="drawIt.content.changeDesign('bob')" src="/assets/images/players/bob.png">
+                    <img class="player" id="player-edouardo" name="edouardo" onclick="drawIt.content.changeDesign('edouardo')" src="/assets/images/players/edouardo.png">
+                    <img class="player" id="player-alix" name="alix" onclick="drawIt.content.changeDesign('alix')" src="/assets/images/players/alix.png">
                 </div>
             </div>
 
@@ -79,9 +79,9 @@
                     <div id="game-selection" style="display:none;">
                         <div class="white vertical-center">
                             <h2>Choisissez votre mot :</h2>
-                            <button id="choice1" onclick="$.content.choice(1)" class="ui inverted blue button choice"></button>
-                            <button id="choice2" onclick="$.content.choice(2)" class="ui inverted blue button choice"></button>
-                            <button id="choice3"  onclick="$.content.choice(3)" class="ui inverted blue button choice"></button>
+                            <button id="choice1" onclick="drawIt.content.choice(1)" class="ui inverted blue button choice"></button>
+                            <button id="choice2" onclick="drawIt.content.choice(2)" class="ui inverted blue button choice"></button>
+                            <button id="choice3"  onclick="drawIt.content.choice(3)" class="ui inverted blue button choice"></button>
                         </div>
                     </div>
                     <canvas id="game-canvas">

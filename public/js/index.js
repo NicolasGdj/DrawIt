@@ -1,4 +1,4 @@
-$.contentClass = class IndexPage extends PageContent{
+drawIt.contentClass = class IndexPage extends drawIt.pageContentClass{
 
     init() {
         super.init();
@@ -16,7 +16,7 @@ $.contentClass = class IndexPage extends PageContent{
         });
 
         $("#create-input").on('input', () => {
-            $.content.validForm();
+            drawIt.content.validForm();
         });
 
         $("#welcome").text("Bienvenue " + this.data.session.name)
@@ -50,6 +50,14 @@ $.contentClass = class IndexPage extends PageContent{
                     }
                 }
             }
+        });
+
+        $("#create-button").click(() => {
+            drawIt.content.submitForm();
+        });
+
+        $("#error-message > i").click(() => {
+            $('#error-message').hide('slow');
         });
     }
 
@@ -85,4 +93,4 @@ $.contentClass = class IndexPage extends PageContent{
         this.socket.close();
     };
 };
-$.content = new $.contentClass;
+drawIt.content = new drawIt.contentClass;

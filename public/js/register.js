@@ -1,24 +1,35 @@
-$.contentClass = class RegisterPage extends PageContent{
+drawIt.contentClass = class RegisterPage extends drawIt.pageContentClass{
 
     init() {
         super.init();
         this.socket = io('/register');
 
         let form = $("#register-form");
-        form.find('[name="id"]').on('input', () => {$.content.validForm()});
-        form.find('[name="mail"]').on('input', () => {$.content.validForm()});
-        form.find('[name="password"]').on('input', () => {$.content.validForm()});
-        form.find('[name="repassword"]').on('input', () => {$.content.validForm()});
+        form.find('[name="id"]').on('input', () => {drawIt.content.validForm()});
+        form.find('[name="mail"]').on('input', () => {drawIt.content.validForm()});
+        form.find('[name="password"]').on('input', () => {drawIt.content.validForm()});
+        form.find('[name="repassword"]').on('input', () => {drawIt.content.validForm()});
 
         this.socket.on('register', (data) => {
             if(data.code === 200){
                 this.login();
             }else{
+                $("#loader").hide();
+                drawIt.resetProgressbar();
                 $("#register-form-messages").show();
                 let list = $("#register-form-messages-list");
                 list.empty();
                 list.append($("<li />").text(data.message))
             }
+        });
+
+
+        $("#register-form > .submit").click(() => {
+            drawIt.content.submitForm();
+        });
+
+        $("#login-btn").click(() => {
+            drawIt.content.login();
         });
     }
 
@@ -78,10 +89,13 @@ $.contentClass = class RegisterPage extends PageContent{
         let mail = form.find('[name="mail"]');
         let password = form.find('[name="password"]');
         this.socket.emit('register', {id: id.val(), mail: mail.val(), password: password.val()});
+        drawIt.resetProgressbar();
+        drawIt.startProgressbar(80);
+        $("#loader").show();
     }
 
     reset() {
         this.socket.close();
     };
 };
-$.content = new $.contentClass;
+drawIt.content = new drawIt.contentClass;

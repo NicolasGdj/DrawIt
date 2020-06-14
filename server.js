@@ -66,7 +66,7 @@ let channels = [];
 let users = [];
 
 users.push(new User("test", "a@a.fr", md5("testtest")));
-users.push(new User("aylox", "a@a.fr", md5("ayloxaylox")));
+users.push(new User("pons", "p@o.ns", md5("ponspons")));
 
 function isConnected(session = undefined){
     if(!session)

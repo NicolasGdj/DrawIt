@@ -3,6 +3,9 @@
 ## Résumé
 Jeu multi-joueur réalisé par Nicolas GUERROUDJ, étudiant en deuxième année d'informatique à l'IUT d'Aix en provence, dans le cadre d'un projet scolaire encadré par **M. Olivier Pons**.
 
+## Sources
+ https://github.com/NicolasGdj/DrawIt
+
 ## Technologies utilisées
 * Node JS (express)
 * Socket IO (js)

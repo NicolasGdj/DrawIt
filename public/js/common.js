@@ -46,20 +46,7 @@ let drawIt = {};
 
 
         socket.on('disconnect', function () {
-            if(drawIt.content instanceof drawIt.pageContentClass){
-                drawIt.content.reset();
-            }
-            let content = $("#content");
-            content.empty();
-            content.html("" +
-                "<div class=\"ui placeholder segment\" style=\"height: 100%\">\n" +
-                "    <div class=\"ui centered vertical\">\n" +
-                "        <p>" +
-                "        Un problème avec le serveur est survenu :(<br />\n" +
-                "        Merci de contacter l'administrateur : nicolas@guerroudj.fr\n" +
-                "        </p>" +
-                "   </div>\n" +
-                "</div>\n")
+            fatalError();
         });
 
         drawIt.progressbar = $("#load_progress");
@@ -103,7 +90,7 @@ let drawIt = {};
 
         socket.on('load', (data) => {
             if(data && data.url && data.script && data.data){
-                $("#content").attr("w3-include-html", data.url);
+                $("#content").attr("include-html", data.url);
                 if(drawIt.content instanceof drawIt.pageContentClass){
                     drawIt.content.reset();
                 }
@@ -135,35 +122,49 @@ let drawIt = {};
         });
     });
 
+    function fatalError(){
+        if(drawIt.content instanceof drawIt.pageContentClass){
+            drawIt.content.reset();
+        }
+        let content = $("#content");
+        content.empty();
+        content.html("" +
+            "<div class=\"ui placeholder segment\" style=\"height: 100%\">\n" +
+            "    <div class=\"ui centered vertical\">\n" +
+            "        <p>" +
+            "        Un problème avec le serveur est survenu :(<br />\n" +
+            "        Merci de contacter l'administrateur : nicolas@guerroudj.fr\n" +
+            "        </p>" +
+            "   </div>\n" +
+            "</div>\n");
+    }
+
     /**
-     * Source:
+     * Inspired from:
      * https://www.w3schools.com/howto/howto_html_include.asp
-     * Modified by Nicolas GUERROUDJ
+     * Created by Nicolas GUERROUDJ
      */
     function includeHTML(before = undefined, after = undefined) {
-        let z, i, elmnt, file, xhttp;
-        z = document.getElementsByTagName("*");
-        for (i = 0; i < z.length; i++) {
-            elmnt = z[i];
-            file = elmnt.getAttribute("w3-include-html");
-            if (file) {
-                xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if (this.readyState == 4) {
-                        if(before !== undefined)
-                            before();
-                        if (this.status == 200) {elmnt.innerHTML = this.responseText;}
-                        if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
-                        elmnt.removeAttribute("w3-include-html");
-                        if(after !== undefined)
-                            after();
-                    }
-                }
-                xhttp.open("GET", file, true);
-                xhttp.send();
-                return;
-            }
+
+        let list = $("*[include-html]");
+        for(let obj of list){
+            let jObj = $(obj);
+            $.ajax({
+                url: jObj.attr("include-html")
+            }).done((data) => {
+                if(before !== undefined)
+                    before();
+
+                jObj.html(data);
+                jObj.removeAttr("include-html");
+
+                if(after !== undefined)
+                    after();
+            }).fail(() => {
+                fatalError();
+            });
         }
+
     };
 
 })();

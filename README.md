@@ -1,7 +1,8 @@
 # Projet de jQuery
 
 ## Résumé
-Jeu multi-joueur réalisé par Nicolas GUERROUDJ, étudiant en deuxième année d'informatique à l'IUT d'Aix en provence, dans le cadre d'un projet scolaire encadré par **M. Olivier Pons**.
+Jeu multi-joueur tour par tour,  où il faut faire deviner un mot aux autres joueurs grâce à un dessin. (Inspiré du Pictionary)
+Application réalisé par Nicolas GUERROUDJ, étudiant en deuxième année d'informatique à l'IUT d'Aix en provence, dans le cadre d'un projet scolaire encadré par **M. Olivier Pons**.
 
 ## Sources
  https://github.com/NicolasGdj/DrawIt
